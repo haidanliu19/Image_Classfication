@@ -104,7 +104,7 @@ def train(arg, opt, device, tb_writer, log_dir):
     os.makedirs(wdir, exist_ok=True)
     # 데이터 
     if opt.dataset == 'cifar10':
-        train_loader, test_loader, classes = dataset.cifar10_datast(opt.num_workers, opt.batch_size)
+        train_loader, test_loader, classes = dataset.cifar10_datast(opt, opt.num_workers, opt.batch_size)
         
     # 모델 
     model = _get_model(opt)
