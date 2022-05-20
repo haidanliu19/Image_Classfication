@@ -4,9 +4,10 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 import torchvision
 
-def cifar10_datast(num_workers, batch_size):
+def cifar10_datast(opt, num_workers, batch_size):
     transform = transforms.Compose([
         transforms.ToTensor(),
+        transforms.Resize([opt.imgH, opt.imgW]),
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     
     
