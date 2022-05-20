@@ -13,7 +13,7 @@ import torch
 # OUPUT : 10
 
 class BaseModel(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes: int = 1000) -> None:
         super(BaseModel, self).__init__()
         self.C1 = nn.Conv2d(in_channels = 3, out_channels = 6, stride = 1, kernel_size = (5, 5))
         self.S2 = nn.MaxPool2d((2,2))
@@ -35,3 +35,9 @@ class BaseModel(nn.Module):
         x = self.F6(x)
         out = self.F7(x)
         return out
+    
+if __name__ == "__main__":
+    model = BaseModel().to('cuda')
+    from torchsummary import summary
+    summary(model, input_size=(3, 32, 32))
+
