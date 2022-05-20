@@ -1,10 +1,14 @@
-saved_model_name: 'LeNet5'
+saved_model_name: 'AlexNet'
 saved_model: '' # pretrained model
 base_model_name: 'models' 
-model_name: 'LeNet5'
+model_name: 'AlexNet'
 class_name: 'BaseModel'
-imgH: 32 # input 단계에서 이미지 height 사이즈
-imgW: 32 # input 단계에서 이미지 width 사이즈
+# LeNet 32
+#imgH: 32 # input 단계에서 이미지 height 사이즈
+#imgW: 32 # input 단계에서 이미지 width 사이즈
+# AlexNet 227
+imgH: 227
+imgW: 227
 num_workers: 2 # dataset
 batch_size: 16
 criterion: ''
