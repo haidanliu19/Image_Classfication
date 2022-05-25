@@ -9,9 +9,9 @@ def test(test_loader, model, classes, criterion, training, rank, tb_writer):
     training = model is not None
     if training:  # called by train.py
         device = next(model.parameters()).device  # get model device
-    
+    running_loss=0
 
-    size = len(test_loader.dataset)    
+    total = len(test_loader.dataset)    
     nb = len(test_loader)  
     pbar = enumerate(test_loader)
     if rank in (-1, 0):
@@ -24,7 +24,9 @@ def test(test_loader, model, classes, criterion, training, rank, tb_writer):
             inputs, targets = data_point
             inputs, targets = inputs.to(device, non_blocking=True), targets.to(device)
             output = model(inputs)
-            test_loss += criterion(output, targets).item()
+            loss =  criterion(output, targets)
+            
+            running_loss+=loss.item()
             correct += (output.argmax(1) == targets).type(torch.float).sum().item()
             class_probs_batch = [F.softmax(el, dim=0) for el in output]
 
@@ -41,7 +43,7 @@ def test(test_loader, model, classes, criterion, training, rank, tb_writer):
     for i in range(len(classes)):
         add_pr_curve_tensorboard(i, test_probs, test_preds, classes, tb_writer)
     
-    test_loss /= nb
-    correct /= size
-    
+    test_loss = running_loss/ nb
+    correct /= total
+
     return test_loss, correct
