@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # python train.py --config ./configs/model_train.yaml --device 0,1
+# python train.py --config ./configs/model_train_AlexNet.yaml --device 0,1
 # tensorboard 관련 내용 https://tutorials.pytorch.kr/intermediate/tensorboard_tutorial.html
 import argparse
 import logging
@@ -20,6 +21,9 @@ import importlib
 
 import torch
 from torch.utils.tensorboard import SummaryWriter
+
+import torchvision
+
 logger = logging.getLogger(__name__)
 import test
 
@@ -31,11 +35,12 @@ def _get_model(opt):
     return model
         
 # https://tutorials.pytorch.kr/recipes/recipes/amp_recipe.html
-def trainer(model, arg, opt, start_epoch, train_loader, test_loader, tb_writer, classes, criterion, optimizer, rank, device):
+def trainer(model, arg, opt, start_epoch, train_loader, test_loader, tb_writer, classes, criterion, optimizer, log_dir, rank, device):
     # 학습
     train_loss, train_correct = 0.0, 0
     results = (0.0, 0, 0.0, 0) 
-    
+    best_accuracy = -1
+    running_loss=0
     for n_epoch, epoch in enumerate(range(start_epoch, opt.num_epoch)):
         start=time.time()        
         model.train()        
@@ -48,7 +53,7 @@ def trainer(model, arg, opt, start_epoch, train_loader, test_loader, tb_writer, 
         if rank in (-1, 0):
             pbar = tqdm(pbar, total=nb, bar_format='{l_bar}{bar:10}{r_bar}{bar:-10b}')  # progress bar
         
-        size = len(train_loader.dataset)
+        total = len(train_loader.dataset)
         for n_iter, data_point in pbar:
       
             inputs, targets = data_point
@@ -63,24 +68,22 @@ def trainer(model, arg, opt, start_epoch, train_loader, test_loader, tb_writer, 
             nn.utils.clip_grad_norm_(model.parameters(), opt.grad_clip) #gradient clipping with 5
             optimizer.step()
             
-            train_loss += loss.item()
-            
-            if n_iter % 1000 == 999: 
-                # ...학습 중 손실(running loss)을 기록하고
-                tb_writer.add_scalar('training loss',
-                            train_loss / 1000,
-                            epoch * len(train_loader) + n_iter)
-                # ...무작위 미니배치(mini-batch)에 대한 모델의 예측 결과를 보여주도록
-                # Matplotlib Figure를 기록합니다
-                tb_writer.add_figure('predictions vs. actuals',
-                            plot_classes_preds(model, inputs, targets, classes, device),
-                            global_step = epoch * len(train_loader) + n_iter)
-        train_loss /= nb
-        train_correct /= size
+            running_loss += loss.item()
+     
+                        
+        train_loss = running_loss/  nb
+        train_correct /= total
         
         # 모델 평가하기
         training = True
         test_loss, test_correct = test.test(test_loader, model, classes, criterion, training, rank, tb_writer)
+        
+        
+        #keep the best
+        if test_correct > best_accuracy:
+            best_accuracy = test_correct
+            torch.save(model.module.state_dict(), f'{log_dir}/weights/best.pth')
+        
         
         results = (train_loss, train_correct, test_loss, test_correct)
         # Tensorboard
@@ -88,8 +91,12 @@ def trainer(model, arg, opt, start_epoch, train_loader, test_loader, tb_writer, 
             tags = ['Train Loss/Epochs', 'Train Accuracy/Epochs', 'Validation Loss/Epochs', 'Validation Accuracy/Epochs']  # params
             for x, tag in zip(list(results), tags):
                 tb_writer.add_scalar(tag, x, epoch)
-                    
-         
+            tb_writer.flush()       
+        results = list(map(str, results))
+        with open(f'{log_dir}/log_train.txt', 'a') as log:
+            log.write("          ".join(results)+'\n')
+    
+    tb_writer.close()
     
 def train(arg, opt, device, tb_writer, log_dir):
     logger.info("train start")
@@ -105,7 +112,15 @@ def train(arg, opt, device, tb_writer, log_dir):
     # 데이터 
     if opt.dataset == 'cifar10':
         train_loader, test_loader, classes = dataset.cifar10_datast(opt, opt.num_workers, opt.batch_size)
-        
+    
+    # dataset 보여주기 
+    dataiter = iter(train_loader)
+    images, labels = dataiter.next()
+
+    img_grid = torchvision.utils.make_grid(images)
+    tb_writer.add_image('Train ' +opt.dataset + ' Image', img_grid)
+    tb_writer.flush()
+    
     # 모델 
     model = _get_model(opt)
 
@@ -166,7 +181,7 @@ def train(arg, opt, device, tb_writer, log_dir):
             print(e)
             print('coud not load model')        
     '''
-    trainer(model, arg, opt, start_epoch, train_loader, test_loader, tb_writer, classes, criterion, optimizer, rank, device)   
+    trainer(model, arg, opt, start_epoch, train_loader, test_loader, tb_writer, classes, criterion, optimizer, log_dir, rank, device)   
     
 
 def main(arg):    
