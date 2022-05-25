@@ -1,0 +1,16 @@
+saved_model_name: 'AlexNet'
+saved_model: '' # pretrained model
+base_model_name: 'models' 
+model_name: 'AlexNet'
+class_name: 'BaseModel'
+# AlexNet 227
+imgH: 227
+imgW: 227
+num_workers: 2 # dataset
+batch_size: 16
+criterion: ''
+optim: 'Adam'
+dataset: 'cifar10'
+num_epoch : 25
+loss: 'criterion'
+grad_clip: 5
