@@ -1,0 +1,16 @@
+saved_model_name: 'VGGNetA'
+saved_model: '' # pretrained model
+base_model_name: 'models' 
+model_name: 'VGGNetA'
+class_name: 'BaseModel'
+# VGGNetA 224
+imgH: 224 # input 단계에서 이미지 height 사이즈
+imgW: 224 # input 단계에서 이미지 width 사이즈
+num_workers: 2 # dataset
+batch_size: 16
+criterion: ''
+optim: 'Adam'
+dataset: 'cifar10'
+num_epoch : 25
+loss: 'criterion'
+grad_clip: 5
