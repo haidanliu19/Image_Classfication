@@ -42,6 +42,7 @@ class BaseModel(nn.Module):
         
         self.features78 = nn.Sequential(
             nn.Conv2d(in_channels = 512, out_channels = 512, stride = 1, kernel_size = (3, 3), padding = 1),
+            nn.ReLU(inplace = True),
             nn.Conv2d(in_channels = 512, out_channels = 512, stride = 1, kernel_size = (3, 3), padding = 1),
             nn.ReLU(inplace = True),
         )
