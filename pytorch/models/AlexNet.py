@@ -37,7 +37,7 @@ class BaseModel(nn.Module):
         )
         self.classifier = nn.Sequential(
             nn.Dropout(p=dropout),
-            nn.Linear(256 * 6 * 6, 4096),
+            nn.Linear(512 * 104 * 104, 4096),
             nn.ReLU(inplace = True),
             nn.Linear(4096, 4096),
             nn.ReLU(inplace = True),
@@ -51,6 +51,7 @@ class BaseModel(nn.Module):
         x = self.features5(x)
         x = torch.flatten(x, 1) # torch.Size([2, 9216])
         x = self.classifier(x)
+        x = view(x, -1)
         return x
 
 if __name__ == "__main__":
