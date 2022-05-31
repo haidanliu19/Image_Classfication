@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-# python train.py --config ./configs/model_train.yaml --device 0,1
-# python train.py --config ./configs/model_train_AlexNet.yaml --device 0,1
-# python train.py --config ./configs/model_train_VGGNetA.yaml --device 0,1
-# python train.py --config ./configs/model_train_VGGNetA-LRN.yaml --device 0,1
 # tensorboard 관련 내용 https://tutorials.pytorch.kr/intermediate/tensorboard_tutorial.html
 import argparse
 import logging
