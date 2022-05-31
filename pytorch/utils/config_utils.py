@@ -11,7 +11,7 @@ class load_config(object):
                     __dict2attr(v, f'{prefix}{k}_')
                 else:
                     if k == 'model_name':
-                        assert v in ['LeNet5', 'AlexNet', 'VGGNetA','VGGNetA-LRN']
+                        assert v in ['LeNet5', 'AlexNet', 'VGGNetA','VGGNetA-LRN','VGGNetB']
                         
                     self.__setattr__(f'{prefix}{k}', v)
         assert os.path.exists(config_path), '%s does not exists!' % config_path
