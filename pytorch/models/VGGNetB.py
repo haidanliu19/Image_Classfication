@@ -14,7 +14,7 @@ model
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 device
 
-# 11 layer
+# 13 layer
 class BaseModel(nn.Module):
     def __init__(self, num_classes: int = 1000, dropout: float = 0.5) -> None:
         super().__init__()
@@ -22,6 +22,8 @@ class BaseModel(nn.Module):
         self.features1 = nn.Sequential(
             # input 224x224x3
             nn.Conv2d(in_channels = 3, out_channels = 64, stride = 1, kernel_size = (3, 3), padding = 1),
+            nn.ReLU(inplace = True),
+            nn.Conv2d(in_channels = 64, out_channels = 64, stride = 1, kernel_size = (3, 3), padding = 1),
             nn.ReLU(inplace = True),
             nn.MaxPool2d(kernel_size=2, stride=2),
         )
