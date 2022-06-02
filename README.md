@@ -17,4 +17,6 @@ python train.py --config ./configs/model_train_VGGNetA.yaml --device 0,1
 python train.py --config ./configs/model_train_VGGNetA-LRN.yaml --device 0,1
 
 python train.py --config ./configs/model_train_VGGNetB.yaml --device 0,1
+
+python train.py --config ./configs/model_train_VGGNetC.yaml --device 0,1
 ```
