@@ -5,6 +5,7 @@ import torch
 from tqdm import tqdm
 
 def test(test_loader, model, classes, criterion, training, rank, tb_writer):
+    model.eval()
     test_loss, correct = 0.0, 0
     training = model is not None
     if training:  # called by train.py
