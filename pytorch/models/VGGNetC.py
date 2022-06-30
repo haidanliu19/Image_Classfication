@@ -41,7 +41,7 @@ class BaseModel(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv2d(in_channels = 256, out_channels = 256, stride = 1, kernel_size = (3, 3), padding = 1),
             nn.ReLU(inplace = True),
-            nn.Conv2d(in_channels = 256, out_channels = 256, stride = 1, kernel_size = (3, 3), padding = 1),
+            nn.Conv2d(in_channels = 256, out_channels = 256, stride = 1, kernel_size = (1, 1), padding = 1),
             nn.ReLU(inplace = True),
             nn.MaxPool2d(kernel_size=2, stride=2)
         ) 
@@ -50,7 +50,7 @@ class BaseModel(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv2d(in_channels = 512, out_channels = 512, stride = 1, kernel_size = (3, 3), padding = 1),
             nn.ReLU(inplace = True),
-            nn.Conv2d(in_channels = 512, out_channels = 512, stride = 1, kernel_size = (3, 3), padding = 1),
+            nn.Conv2d(in_channels = 512, out_channels = 512, stride = 1, kernel_size = (1, 1), padding = 1),
             nn.ReLU(inplace = True),
             nn.MaxPool2d(kernel_size=2, stride=2)
         ) 
@@ -60,13 +60,13 @@ class BaseModel(nn.Module):
             nn.ReLU(inplace = True),
             nn.Conv2d(in_channels = 512, out_channels = 512, stride = 1, kernel_size = (3, 3), padding = 1),
             nn.ReLU(inplace = True),
-            nn.Conv2d(in_channels = 512, out_channels = 512, stride = 1, kernel_size = (3, 3), padding = 1),
+            nn.Conv2d(in_channels = 512, out_channels = 512, stride = 1, kernel_size = (1, 1), padding = 1),
             nn.ReLU(inplace = True),
         )
         self.pool = nn.MaxPool2d(2, 2) # maxpooling
         
         self.classifier = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 4096),
+            nn.Linear(512 * 8 * 8, 4096),
             nn.ReLU(inplace=True),
             nn.Dropout(p=0.5),
             nn.Linear(4096, 4096),
